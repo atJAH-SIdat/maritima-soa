@@ -8,8 +8,8 @@ Proyecto integrador del curso **Aplicaciones con Enfoque Orientado a Servicios**
 | Integrante | Rol | Carpeta a su cargo |
 | --- | --- | --- |
 | Albornoz Hinostroza, Jatniel | Arquitecto de procesos (BPMN y jBPM) | `docs/bpmn/`, `jbpm/` |
-| Vargas Zapata, Renzo | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
-| Marcelo Rodriguez, Fabian | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
+| Marcelo Rodriguez, Fabian | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
+| Vargas Zapata, Renzo | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
 
 ## El caso
 
