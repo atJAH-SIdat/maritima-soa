@@ -3,15 +3,13 @@
 Sistema integrado de venta de pasajes marítimos nacionales e internacionales.
 Proyecto integrador del curso **Aplicaciones con Enfoque Orientado a Servicios** (Grupo 4).
 
-**Estado:** Entregable 1, definición del proyecto. Los servicios, el flujo Mule y el proceso jBPM se agregan en los entregables 2 y 3.
-
 ## Integrantes
 
 | Integrante | Rol | Carpeta a su cargo |
 | --- | --- | --- |
-| [Nombre 1] | Arquitecto de procesos (BPMN y jBPM) | `docs/bpmn/`, `jbpm/` |
-| [Nombre 2] | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
-| [Nombre 3] | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
+| Albornoz Hinostroza, Jatniel | Arquitecto de procesos (BPMN y jBPM) | `docs/bpmn/`, `jbpm/` |
+| Vargas Zapata, Renzo | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
+| Marcelo Rodriguez, Fabian | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
 
 ## El caso
 
@@ -78,4 +76,4 @@ maritima-soa/
 
 ## Cómo ejecutar
 
-Pendiente. Los pasos se documentan en el Entregable 2, cuando los servicios SOAP y REST estén en ejecución.
+Pendiente.
