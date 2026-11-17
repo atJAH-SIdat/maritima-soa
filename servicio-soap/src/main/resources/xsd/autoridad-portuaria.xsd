@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Contrato de AutoridadPortuariaService. El WSDL se genera a partir de este esquema:
+     cada par de elementos xxxRequest / xxxResponse se convierte en la operación xxx. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://maritimasoa.grupo4.pe/autoridadportuaria"
+           targetNamespace="http://maritimasoa.grupo4.pe/autoridadportuaria"
+           elementFormDefault="qualified">
+
+    <!-- Operación consultarEstadoPuerto -->
+    <xs:element name="consultarEstadoPuertoRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="codigoPuerto" type="xs:string"/>
+                <xs:element name="fechaZarpe" type="xs:date"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="consultarEstadoPuertoResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="puertoAbierto" type="xs:boolean"/>
+                <xs:element name="condicionMaritima" type="xs:string"/>
+                <xs:element name="codigoAutorizacionZarpe" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Operación validarMigracionPasajero -->
+    <xs:element name="validarMigracionPasajeroRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="numeroPasaporte" type="xs:string"/>
+                <xs:element name="documentoIdentidad" type="xs:string"/>
+                <xs:element name="paisDestino" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="validarMigracionPasajeroResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="habilitadoViaje" type="xs:boolean"/>
+                <xs:element name="pasaporteVigente" type="xs:boolean"/>
+                <xs:element name="impedimentoSalida" type="xs:boolean"/>
+                <xs:element name="mensajeControl" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

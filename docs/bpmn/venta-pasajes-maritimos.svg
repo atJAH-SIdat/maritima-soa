@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="774" viewBox="0 0 1440 774" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5">
 <rect width="1440" height="774" fill="#ffffff"/>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f2933"/></marker></defs>
-<text x="20" y="30" font-size="19" font-weight="600" fill="#1f2933">Proceso de venta de pasajes marítimos (BPMN 2.0, borrador)</text>
-<text x="20" y="50" font-size="12.5" fill="#52606d">Grupo 4 · Aplicaciones con Enfoque Orientado a Servicios · Entregable 1</text>
+<text x="20" y="30" font-size="19" font-weight="600" fill="#1f2933">Proceso de venta de pasajes marítimos (BPMN 2.0, versión 2)</text>
+<text x="20" y="50" font-size="12.5" fill="#52606d">Grupo 4 · Aplicaciones con Enfoque Orientado a Servicios · Entregable 2 · Servicios en REST :8082 y SOAP :8083</text>
 <g transform="translate(20,64)">
 <rect x="0" y="0" width="1400" height="650" fill="#ffffff" stroke="#1f2933" stroke-width="1.5"/>
 <line x1="30" y1="0" x2="30" y2="650" stroke="#1f2933" stroke-width="1.5"/>

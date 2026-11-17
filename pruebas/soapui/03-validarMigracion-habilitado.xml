@@ -1,0 +1,11 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:aut="http://maritimasoa.grupo4.pe/autoridadportuaria">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <aut:validarMigracionPasajeroRequest>
+         <aut:numeroPasaporte>PE1234567</aut:numeroPasaporte>
+         <aut:documentoIdentidad>71234567</aut:documentoIdentidad>
+         <aut:paisDestino>Chile</aut:paisDestino>
+      </aut:validarMigracionPasajeroRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
