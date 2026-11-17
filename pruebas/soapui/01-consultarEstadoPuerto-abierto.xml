@@ -1,0 +1,10 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:aut="http://maritimasoa.grupo4.pe/autoridadportuaria">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <aut:consultarEstadoPuertoRequest>
+         <aut:codigoPuerto>PE-CAL</aut:codigoPuerto>
+         <aut:fechaZarpe>2026-11-28</aut:fechaZarpe>
+      </aut:consultarEstadoPuertoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

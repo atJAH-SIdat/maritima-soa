@@ -1,0 +1,106 @@
+{
+  "info": {
+    "name": "MaritimaSOA - NavieraReservasAPI",
+    "description": "Pruebas del servicio REST de la naviera (Grupo 4). Ejecutar en orden con el servicio recién iniciado: la prueba 6 depende de que MAR-INT-04 tenga sus 2 cupos iniciales.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8082" },
+    { "key": "idBoleto", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Listar viajes",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+        "pm.test('Devuelve los 4 viajes de prueba', () => pm.expect(pm.response.json()).to.have.lengthOf(4));"
+      ] } }],
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/viajes" }
+    },
+    {
+      "name": "2. Consultar viaje internacional",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+        "const v = pm.response.json();",
+        "pm.test('Es ruta INTERNACIONAL', () => pm.expect(v.tipoRuta).to.eql('INTERNACIONAL'));",
+        "pm.test('Trae los datos que necesita el servicio SOAP', () => {",
+        "  pm.expect(v.codigoPuerto).to.eql('PE-CAL');",
+        "  pm.expect(v.fechaZarpe).to.eql('2026-11-28');",
+        "  pm.expect(v.paisDestino).to.eql('Chile');",
+        "});",
+        "pm.test('Informa cupos y precio', () => {",
+        "  pm.expect(v.cuposDisponibles).to.be.a('number');",
+        "  pm.expect(v.precioUnitario).to.eql(180);",
+        "});"
+      ] } }],
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/viajes/MAR-INT-01" }
+    },
+    {
+      "name": "3. Consultar viaje inexistente (404)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 404', () => pm.response.to.have.status(404));",
+        "pm.test('Código VIAJE_NO_ENCONTRADO', () => pm.expect(pm.response.json().codigo).to.eql('VIAJE_NO_ENCONTRADO'));"
+      ] } }],
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/viajes/MAR-XXX-99" }
+    },
+    {
+      "name": "4. Emitir boleto (201)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+        "const b = pm.response.json();",
+        "pm.test('Estado EMITIDO', () => pm.expect(b.estado).to.eql('EMITIDO'));",
+        "pm.test('Monto = 2 asientos x 180', () => pm.expect(b.montoTotal).to.eql(360));",
+        "pm.test('Muelle internacional', () => pm.expect(b.muelleEmbarque).to.eql('Muelle B - Internacional'));",
+        "pm.collectionVariables.set('idBoleto', b.idBoleto);"
+      ] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoViaje\": \"MAR-INT-01\",\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Juan Perez\",\n  \"tipoRuta\": \"INTERNACIONAL\",\n  \"cantidadAsientos\": 2,\n  \"codigoAutorizacionZarpe\": \"ZARPE-PE-CAL-20261128\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/boletos"
+      }
+    },
+    {
+      "name": "5. Consultar boleto emitido",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+        "pm.test('Es el boleto recién emitido', () => pm.expect(pm.response.json().idBoleto).to.eql(pm.collectionVariables.get('idBoleto')));"
+      ] } }],
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/boletos/{{idBoleto}}" }
+    },
+    {
+      "name": "6. Emitir boleto sin cupos (409)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 409', () => pm.response.to.have.status(409));",
+        "pm.test('Código SIN_CUPOS', () => pm.expect(pm.response.json().codigo).to.eql('SIN_CUPOS'));"
+      ] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoViaje\": \"MAR-INT-04\",\n  \"documentoPasajero\": \"70000004\",\n  \"nombrePasajero\": \"Ana Torres\",\n  \"tipoRuta\": \"INTERNACIONAL\",\n  \"cantidadAsientos\": 3,\n  \"codigoAutorizacionZarpe\": \"ZARPE-PE-PAI-20261130\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/boletos"
+      }
+    },
+    {
+      "name": "7. Emitir boleto con datos inválidos (400)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+        "pm.test('Código SOLICITUD_INVALIDA', () => pm.expect(pm.response.json().codigo).to.eql('SOLICITUD_INVALIDA'));"
+      ] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"codigoViaje\": \"MAR-NAC-02\",\n  \"documentoPasajero\": \"70000005\",\n  \"nombrePasajero\": \"Luis Rojas\",\n  \"tipoRuta\": \"NACIONAL\",\n  \"cantidadAsientos\": 0,\n  \"codigoAutorizacionZarpe\": \"ZARPE-PE-CAL-20261127\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/boletos"
+      }
+    },
+    {
+      "name": "8. Consultar boleto inexistente (404)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Responde 404', () => pm.response.to.have.status(404));",
+        "pm.test('Código BOLETO_NO_ENCONTRADO', () => pm.expect(pm.response.json().codigo).to.eql('BOLETO_NO_ENCONTRADO'));"
+      ] } }],
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/boletos/BOL-0000-000" }
+    }
+  ]
+}
