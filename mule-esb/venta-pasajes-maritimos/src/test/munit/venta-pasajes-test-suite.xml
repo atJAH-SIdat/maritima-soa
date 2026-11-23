@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+	<!--
+		Pruebas de venta-pasajes-flow. Los servicios REST, SOAP y ActiveMQ se simulan (Mock When),
+		así que las pruebas corren sin levantar ningún servidor.
+		Preparar (behavior) -> Ejecutar (execution) -> Validar (validation)
+	-->
+	<munit:config name="venta-pasajes-test-suite.xml" />
+
+	<!-- Prueba 1: venta internacional exitosa -->
+	<munit:test name="venta-internacional-exitosa-test" description="Viaje con cupos, puerto abierto y pasaporte habilitado: se emite el boleto y se publica 1 aviso en la cola">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="REST: viaje MAR-INT-01" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar viaje" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-01', paisDestino: 'Chile', tipoRuta: 'INTERNACIONAL', codigoPuerto: 'PE-CAL', fechaZarpe: '2026-11-28', cuposDisponibles: 25, precioUnitario: 180.0 }]" mediaType="application/json" />
+					<munit-tools:attributes value="#[{ statusCode: 200 }]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP: puerto abierto" processor="wsc:consume">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar estado del puerto" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[{ body: { consultarEstadoPuertoResponse: { puertoAbierto: 'true', condicionMaritima: 'NORMAL', codigoAutorizacionZarpe: 'ZARPE-PE-CAL-20261128' } } }]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP: pasaporte habilitado" processor="wsc:consume">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Validar migración del pasajero" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[{ body: { validarMigracionPasajeroResponse: { habilitadoViaje: 'true', pasaporteVigente: 'true', impedimentoSalida: 'false', mensajeControl: 'Pasajero habilitado para viajar a Chile' } } }]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="REST: boleto emitido" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Emitir boleto" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- { idBoleto: 'BOL-2026-001', codigoViaje: 'MAR-INT-01', nombrePasajero: 'Ana Perez', tipoRuta: 'INTERNACIONAL', cantidadAsientos: 2, estado: 'EMITIDO', montoTotal: 360.0, muelleEmbarque: 'Muelle B - Internacional' }]" mediaType="application/json" />
+					<munit-tools:attributes value="#[{ statusCode: 201 }]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="ActiveMQ: publicar" processor="jms:publish" />
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Solicitud: MAR-INT-01, 2 asientos, PE1234567">
+				<munit:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-01', cantidadAsientos: 2, documentoPasajero: '71234567', nombrePasajero: 'Ana Perez', numeroPasaporte: 'PE1234567' }]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="venta-pasajes-flow" name="venta-pasajes-flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="estado = EMITIDO" expression="#[payload.estado]" is="#[MunitTools::equalTo('EMITIDO')]" />
+			<munit-tools:assert-that doc:name="montoTotal = 360.0" expression="#[payload.montoTotal]" is="#[MunitTools::equalTo(360.0)]" />
+			<munit-tools:assert-that doc:name="HTTP 201" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(201)]" />
+			<munit-tools:verify-call doc:name="Se publicó 1 aviso en la cola" processor="jms:publish" times="1" />
+		</munit:validation>
+	</munit:test>
+
+	<!-- Prueba 2: excepción de negocio, pasaporte vencido -->
+	<munit:test name="pasaporte-vencido-test" description="Migraciones rechaza el pasaporte PE7654321: la venta se rechaza con 422 y no se emite boleto">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="REST: viaje MAR-INT-01" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar viaje" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-01', paisDestino: 'Chile', tipoRuta: 'INTERNACIONAL', codigoPuerto: 'PE-CAL', fechaZarpe: '2026-11-28', cuposDisponibles: 25, precioUnitario: 180.0 }]" mediaType="application/json" />
+					<munit-tools:attributes value="#[{ statusCode: 200 }]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP: puerto abierto" processor="wsc:consume">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar estado del puerto" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[{ body: { consultarEstadoPuertoResponse: { puertoAbierto: 'true', condicionMaritima: 'NORMAL', codigoAutorizacionZarpe: 'ZARPE-PE-CAL-20261128' } } }]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP: pasaporte vencido" processor="wsc:consume">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Validar migración del pasajero" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[{ body: { validarMigracionPasajeroResponse: { habilitadoViaje: 'false', pasaporteVigente: 'false', impedimentoSalida: 'false', mensajeControl: 'Pasaporte vencido' } } }]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="REST: emitir boleto" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Emitir boleto" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="ActiveMQ: publicar" processor="jms:publish" />
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Solicitud: MAR-INT-01, pasaporte PE7654321">
+				<munit:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-01', cantidadAsientos: 1, documentoPasajero: '71234567', nombrePasajero: 'Ana Perez', numeroPasaporte: 'PE7654321' }]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="venta-pasajes-flow" name="venta-pasajes-flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="estado = RECHAZADA" expression="#[payload.estado]" is="#[MunitTools::equalTo('RECHAZADA')]" />
+			<munit-tools:assert-that doc:name="causa = MIGRACION_RECHAZADA" expression="#[payload.causa]" is="#[MunitTools::equalTo('MIGRACION_RECHAZADA')]" />
+			<munit-tools:assert-that doc:name="HTTP 422" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(422)]" />
+			<munit-tools:verify-call doc:name="No se emitió boleto" processor="http:request" times="0">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Emitir boleto" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="No se publicó aviso" processor="jms:publish" times="0" />
+		</munit:validation>
+	</munit:test>
+
+	<!-- Prueba 3: excepción de negocio, sin cupos -->
+	<munit:test name="sin-cupos-test" description="Se piden 3 asientos en MAR-INT-04, que tiene 2: se rechaza sin consultar a la Autoridad Portuaria">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="REST: viaje MAR-INT-04 con 2 cupos" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar viaje" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-04', paisDestino: 'Ecuador', tipoRuta: 'INTERNACIONAL', codigoPuerto: 'PE-PAI', fechaZarpe: '2026-11-30', cuposDisponibles: 2, precioUnitario: 150.0 }]" mediaType="application/json" />
+					<munit-tools:attributes value="#[{ statusCode: 200 }]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP" processor="wsc:consume" />
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Solicitud: MAR-INT-04, 3 asientos">
+				<munit:payload value="#[output application/json --- { codigoViaje: 'MAR-INT-04', cantidadAsientos: 3, documentoPasajero: '71234567', nombrePasajero: 'Ana Perez', numeroPasaporte: 'PE1234567' }]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="venta-pasajes-flow" name="venta-pasajes-flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="causa = SIN_CUPOS" expression="#[payload.causa]" is="#[MunitTools::equalTo('SIN_CUPOS')]" />
+			<munit-tools:assert-that doc:name="HTTP 422" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(422)]" />
+			<munit-tools:verify-call doc:name="No se consultó el SOAP" processor="wsc:consume" times="0" />
+		</munit:validation>
+	</munit:test>
+
+	<!-- Prueba 4: excepción técnica, el servicio SOAP no responde -->
+	<munit:test name="servicio-soap-caido-test" description="El SOAP no responde: el error se propaga (503) y no se emite boleto" expectedErrorType="WSC:CANNOT_DISPATCH">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="REST: viaje MAR-NAC-02" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar viaje" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- { codigoViaje: 'MAR-NAC-02', paisDestino: 'Perú', tipoRuta: 'NACIONAL', codigoPuerto: 'PE-CAL', fechaZarpe: '2026-11-27', cuposDisponibles: 40, precioUnitario: 95.0 }]" mediaType="application/json" />
+					<munit-tools:attributes value="#[{ statusCode: 200 }]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="SOAP: sin conexión" processor="wsc:consume">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Consultar estado del puerto" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="WSC:CANNOT_DISPATCH" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Solicitud: MAR-NAC-02, 1 asiento">
+				<munit:payload value="#[output application/json --- { codigoViaje: 'MAR-NAC-02', cantidadAsientos: 1, documentoPasajero: '71234567', nombrePasajero: 'Ana Perez' }]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="venta-pasajes-flow" name="venta-pasajes-flow" />
+		</munit:execution>
+	</munit:test>
+
+</mule>

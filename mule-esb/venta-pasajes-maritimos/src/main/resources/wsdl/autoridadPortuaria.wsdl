@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://maritimasoa.grupo4.pe/autoridadportuaria" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://maritimasoa.grupo4.pe/autoridadportuaria" targetNamespace="http://maritimasoa.grupo4.pe/autoridadportuaria">
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://maritimasoa.grupo4.pe/autoridadportuaria">
+
+    <!-- Operación consultarEstadoPuerto -->
+    <xs:element name="consultarEstadoPuertoRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="codigoPuerto" type="xs:string"/>
+                <xs:element name="fechaZarpe" type="xs:date"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="consultarEstadoPuertoResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="puertoAbierto" type="xs:boolean"/>
+                <xs:element name="condicionMaritima" type="xs:string"/>
+                <xs:element minOccurs="0" name="codigoAutorizacionZarpe" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Operación validarMigracionPasajero -->
+    <xs:element name="validarMigracionPasajeroRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="numeroPasaporte" type="xs:string"/>
+                <xs:element name="documentoIdentidad" type="xs:string"/>
+                <xs:element name="paisDestino" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="validarMigracionPasajeroResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="habilitadoViaje" type="xs:boolean"/>
+                <xs:element name="pasaporteVigente" type="xs:boolean"/>
+                <xs:element name="impedimentoSalida" type="xs:boolean"/>
+                <xs:element name="mensajeControl" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="validarMigracionPasajeroResponse">
+    <wsdl:part element="tns:validarMigracionPasajeroResponse" name="validarMigracionPasajeroResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarEstadoPuertoRequest">
+    <wsdl:part element="tns:consultarEstadoPuertoRequest" name="consultarEstadoPuertoRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarEstadoPuertoResponse">
+    <wsdl:part element="tns:consultarEstadoPuertoResponse" name="consultarEstadoPuertoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validarMigracionPasajeroRequest">
+    <wsdl:part element="tns:validarMigracionPasajeroRequest" name="validarMigracionPasajeroRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="AutoridadPortuariaPort">
+    <wsdl:operation name="validarMigracionPasajero">
+      <wsdl:input message="tns:validarMigracionPasajeroRequest" name="validarMigracionPasajeroRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:validarMigracionPasajeroResponse" name="validarMigracionPasajeroResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarEstadoPuerto">
+      <wsdl:input message="tns:consultarEstadoPuertoRequest" name="consultarEstadoPuertoRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:consultarEstadoPuertoResponse" name="consultarEstadoPuertoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AutoridadPortuariaPortSoap11" type="tns:AutoridadPortuariaPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="validarMigracionPasajero">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="validarMigracionPasajeroRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="validarMigracionPasajeroResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarEstadoPuerto">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="consultarEstadoPuertoRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="consultarEstadoPuertoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AutoridadPortuariaService">
+    <wsdl:port binding="tns:AutoridadPortuariaPortSoap11" name="AutoridadPortuariaPortSoap11">
+      <soap:address location="http://localhost:8083/ws"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

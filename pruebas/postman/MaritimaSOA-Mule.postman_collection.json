@@ -1,0 +1,304 @@
+{
+  "info": {
+    "name": "MaritimaSOA - Mule ESB (venta-pasajes-flow)",
+    "description": "Pruebas de punta a punta del flujo Mule (Grupo 4). Requiere ActiveMQ, el servicio REST, el servicio SOAP y la aplicación Mule encendidos. Reiniciar el servicio REST antes de ejecutar para tener los cupos iniciales. Para probar la excepción técnica (503), apagar el servicio SOAP y enviar la petición 2.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Venta internacional exitosa (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+              "const b = pm.response.json();",
+              "pm.test('Estado EMITIDO', () => pm.expect(b.estado).to.eql('EMITIDO'));",
+              "pm.test('Monto = 2 x 180', () => pm.expect(b.montoTotal).to.eql(360));",
+              "pm.test('Aviso publicado en ActiveMQ', () => pm.expect(b.avisoEmbarque).to.eql('PUBLICADO'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-INT-01\",\n  \"cantidadAsientos\": 2,\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Ana Perez\",\n  \"numeroPasaporte\": \"PE1234567\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "2. Venta nacional exitosa, sin control migratorio (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+              "const b = pm.response.json();",
+              "pm.test('Estado EMITIDO', () => pm.expect(b.estado).to.eql('EMITIDO'));",
+              "pm.test('Ruta NACIONAL', () => pm.expect(b.tipoRuta).to.eql('NACIONAL'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-NAC-02\",\n  \"cantidadAsientos\": 1,\n  \"documentoPasajero\": \"45678912\",\n  \"nombrePasajero\": \"Luis Rojas\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "3. Pasaporte vencido (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 422', () => pm.response.to.have.status(422));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa MIGRACION_RECHAZADA', () => pm.expect(b.causa).to.eql('MIGRACION_RECHAZADA'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-INT-01\",\n  \"cantidadAsientos\": 1,\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Ana Perez\",\n  \"numeroPasaporte\": \"PE7654321\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "4. Impedimento de salida (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 422', () => pm.response.to.have.status(422));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa MIGRACION_RECHAZADA', () => pm.expect(b.causa).to.eql('MIGRACION_RECHAZADA'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-INT-01\",\n  \"cantidadAsientos\": 1,\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Ana Perez\",\n  \"numeroPasaporte\": \"PE5555555\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "5. Puerto cerrado por oleaje (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 422', () => pm.response.to.have.status(422));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa PUERTO_CERRADO', () => pm.expect(b.causa).to.eql('PUERTO_CERRADO'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-NAC-03\",\n  \"cantidadAsientos\": 1,\n  \"documentoPasajero\": \"45678912\",\n  \"nombrePasajero\": \"Luis Rojas\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "6. Sin cupos (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 422', () => pm.response.to.have.status(422));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa SIN_CUPOS', () => pm.expect(b.causa).to.eql('SIN_CUPOS'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-INT-04\",\n  \"cantidadAsientos\": 3,\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Ana Perez\",\n  \"numeroPasaporte\": \"PE1234567\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "7. Viaje inexistente (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 422', () => pm.response.to.have.status(422));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa VIAJE_NO_ENCONTRADO', () => pm.expect(b.causa).to.eql('VIAJE_NO_ENCONTRADO'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-XXX-99\",\n  \"cantidadAsientos\": 1,\n  \"documentoPasajero\": \"71234567\",\n  \"nombrePasajero\": \"Ana Perez\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    },
+    {
+      "name": "8. Solicitud incompleta (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 400', () => pm.response.to.have.status(400));",
+              "const b = pm.response.json();",
+              "pm.test('Estado RECHAZADA', () => pm.expect(b.estado).to.eql('RECHAZADA'));",
+              "pm.test('Causa SOLICITUD_INVALIDA', () => pm.expect(b.causa).to.eql('SOLICITUD_INVALIDA'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigoViaje\": \"MAR-NAC-02\",\n  \"cantidadAsientos\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{muleUrl}}/api/ventas"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "muleUrl",
+      "value": "http://localhost:8081"
+    }
+  ]
+}

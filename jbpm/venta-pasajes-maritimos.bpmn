@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_MaritimaSOA" exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_codigoViajeItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_cantidadAsientosItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="_documentoPasajeroItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_nombrePasajeroItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_numeroPasaporteItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_tipoRutaItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_codigoPuertoItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_fechaZarpeItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_paisDestinoItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_cuposDisponiblesItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="_puertoAbiertoItem" structureRef="Boolean"/>
+  <bpmn2:itemDefinition id="_codigoAutorizacionZarpeItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_habilitadoViajeItem" structureRef="Boolean"/>
+  <bpmn2:itemDefinition id="_idBoletoItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_montoTotalItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_muelleEmbarqueItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_paseEmbarqueItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_avisoEmbarqueItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_estadoItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_motivoRechazoItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T1_TaskNameInputXItem" structureRef="Object"/>
+  <bpmn2:itemDefinition id="__T1_SkippableInputXItem" structureRef="Object"/>
+  <bpmn2:itemDefinition id="__T1_codigoViajeOutputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T1_cantidadAsientosOutputXItem" structureRef="Integer"/>
+  <bpmn2:itemDefinition id="__T1_documentoPasajeroOutputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T1_nombrePasajeroOutputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T1_numeroPasaporteOutputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_TaskNameInputXItem" structureRef="Object"/>
+  <bpmn2:itemDefinition id="__T8_SkippableInputXItem" structureRef="Object"/>
+  <bpmn2:itemDefinition id="__T8_estadoInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_idBoletoInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_montoTotalInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_muelleEmbarqueInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_paseEmbarqueInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__T8_avisoEmbarqueInputXItem" structureRef="String"/>
+  <bpmn2:process id="maritima-soa.venta-pasajes-maritimos" drools:packageName="com.myspace.maritima_soa" drools:version="1.0" drools:adHoc="false" name="venta-pasajes-maritimos" isExecutable="true" processType="Public">
+    <bpmn2:property id="codigoViaje" itemSubjectRef="_codigoViajeItem" name="codigoViaje"/>
+    <bpmn2:property id="cantidadAsientos" itemSubjectRef="_cantidadAsientosItem" name="cantidadAsientos"/>
+    <bpmn2:property id="documentoPasajero" itemSubjectRef="_documentoPasajeroItem" name="documentoPasajero"/>
+    <bpmn2:property id="nombrePasajero" itemSubjectRef="_nombrePasajeroItem" name="nombrePasajero"/>
+    <bpmn2:property id="numeroPasaporte" itemSubjectRef="_numeroPasaporteItem" name="numeroPasaporte"/>
+    <bpmn2:property id="tipoRuta" itemSubjectRef="_tipoRutaItem" name="tipoRuta"/>
+    <bpmn2:property id="codigoPuerto" itemSubjectRef="_codigoPuertoItem" name="codigoPuerto"/>
+    <bpmn2:property id="fechaZarpe" itemSubjectRef="_fechaZarpeItem" name="fechaZarpe"/>
+    <bpmn2:property id="paisDestino" itemSubjectRef="_paisDestinoItem" name="paisDestino"/>
+    <bpmn2:property id="cuposDisponibles" itemSubjectRef="_cuposDisponiblesItem" name="cuposDisponibles"/>
+    <bpmn2:property id="puertoAbierto" itemSubjectRef="_puertoAbiertoItem" name="puertoAbierto"/>
+    <bpmn2:property id="codigoAutorizacionZarpe" itemSubjectRef="_codigoAutorizacionZarpeItem" name="codigoAutorizacionZarpe"/>
+    <bpmn2:property id="habilitadoViaje" itemSubjectRef="_habilitadoViajeItem" name="habilitadoViaje"/>
+    <bpmn2:property id="idBoleto" itemSubjectRef="_idBoletoItem" name="idBoleto"/>
+    <bpmn2:property id="montoTotal" itemSubjectRef="_montoTotalItem" name="montoTotal"/>
+    <bpmn2:property id="muelleEmbarque" itemSubjectRef="_muelleEmbarqueItem" name="muelleEmbarque"/>
+    <bpmn2:property id="paseEmbarque" itemSubjectRef="_paseEmbarqueItem" name="paseEmbarque"/>
+    <bpmn2:property id="avisoEmbarque" itemSubjectRef="_avisoEmbarqueItem" name="avisoEmbarque"/>
+    <bpmn2:property id="estado" itemSubjectRef="_estadoItem" name="estado"/>
+    <bpmn2:property id="motivoRechazo" itemSubjectRef="_motivoRechazoItem" name="motivoRechazo"/>
+    <bpmn2:laneSet>
+      <bpmn2:lane id="Lane_Pasajero" name="Pasajero"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Pasajero]]></drools:metaValue></drools:metaData></bpmn2:extensionElements>
+        <bpmn2:flowNodeRef>Start</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T1</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T8</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End1</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Naviera" name="Naviera: plataforma de venta (REST)"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Naviera: plataforma de venta (REST)]]></drools:metaValue></drools:metaData></bpmn2:extensionElements>
+        <bpmn2:flowNodeRef>T2</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>G1</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>G2</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Gr</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T9</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End2</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>G3</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Gm</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T5</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T6</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Autoridad" name="Autoridad Portuaria y Migraciones (SOAP)"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Autoridad Portuaria y Migraciones (SOAP)]]></drools:metaValue></drools:metaData></bpmn2:extensionElements>
+        <bpmn2:flowNodeRef>T3</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T4</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>G4</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>T10</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End3</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Despacho" name="Despacho de embarque (ActiveMQ)"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Despacho de embarque (ActiveMQ)]]></drools:metaValue></drools:metaData></bpmn2:extensionElements>
+        <bpmn2:flowNodeRef>T7</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+    </bpmn2:laneSet>
+    <bpmn2:sequenceFlow id="f1" sourceRef="Start" targetRef="T1"/>
+    <bpmn2:sequenceFlow id="f2" sourceRef="T1" targetRef="T2"/>
+    <bpmn2:sequenceFlow id="f3" sourceRef="T2" targetRef="G1"/>
+    <bpmn2:sequenceFlow id="f4" sourceRef="G1" targetRef="T3" name="Sí"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Sí]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[Integer c = (Integer) kcontext.getVariable("cuposDisponibles");
+Integer p = (Integer) kcontext.getVariable("cantidadAsientos");
+return c != null && p != null && c.intValue() >= p.intValue();]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f5" sourceRef="T3" targetRef="G2"/>
+    <bpmn2:sequenceFlow id="f6" sourceRef="G1" targetRef="Gr" name="No"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[No]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[Integer c = (Integer) kcontext.getVariable("cuposDisponibles");
+Integer p = (Integer) kcontext.getVariable("cantidadAsientos");
+return !(c != null && p != null && c.intValue() >= p.intValue());]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f7" sourceRef="G2" targetRef="Gr" name="No"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[No]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !Boolean.TRUE.equals(kcontext.getVariable("puertoAbierto"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f8" sourceRef="Gr" targetRef="T9"/>
+    <bpmn2:sequenceFlow id="f9" sourceRef="T9" targetRef="End2"/>
+    <bpmn2:sequenceFlow id="f10" sourceRef="G2" targetRef="G3" name="Sí"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Sí]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return Boolean.TRUE.equals(kcontext.getVariable("puertoAbierto"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f11" sourceRef="G3" targetRef="Gm" name="Nacional"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Nacional]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !"INTERNACIONAL".equals(kcontext.getVariable("tipoRuta"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f12" sourceRef="G3" targetRef="T4" name="Internacional"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Internacional]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return "INTERNACIONAL".equals(kcontext.getVariable("tipoRuta"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f13" sourceRef="T4" targetRef="G4"/>
+    <bpmn2:sequenceFlow id="f14" sourceRef="G4" targetRef="Gm" name="Sí"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Sí]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return Boolean.TRUE.equals(kcontext.getVariable("habilitadoViaje"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f15" sourceRef="G4" targetRef="T10" name="No"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[No]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !Boolean.TRUE.equals(kcontext.getVariable("habilitadoViaje"));]]></bpmn2:conditionExpression></bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="f16" sourceRef="T10" targetRef="End3"/>
+    <bpmn2:sequenceFlow id="f17" sourceRef="Gm" targetRef="T5"/>
+    <bpmn2:sequenceFlow id="f18" sourceRef="T5" targetRef="T6"/>
+    <bpmn2:sequenceFlow id="f19" sourceRef="T6" targetRef="T7"/>
+    <bpmn2:sequenceFlow id="f20" sourceRef="T7" targetRef="T8"/>
+    <bpmn2:sequenceFlow id="f21" sourceRef="T8" targetRef="End1"/>
+    <bpmn2:startEvent id="Start" name="Solicitud de pasaje"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Solicitud de pasaje]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:outgoing>f1</bpmn2:outgoing></bpmn2:startEvent>
+    <bpmn2:userTask id="T1" name="Solicitar reserva de pasaje"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Solicitar reserva de pasaje]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f1</bpmn2:incoming><bpmn2:outgoing>f2</bpmn2:outgoing>
+      <bpmn2:ioSpecification>
+        <bpmn2:dataInput id="T1_TaskNameInputX" drools:dtype="Object" itemSubjectRef="__T1_TaskNameInputXItem" name="TaskName"/>
+        <bpmn2:dataInput id="T1_SkippableInputX" drools:dtype="Object" itemSubjectRef="__T1_SkippableInputXItem" name="Skippable"/>
+        <bpmn2:dataOutput id="T1_codigoViajeOutputX" drools:dtype="String" itemSubjectRef="__T1_codigoViajeOutputXItem" name="codigoViaje"/>
+        <bpmn2:dataOutput id="T1_cantidadAsientosOutputX" drools:dtype="Integer" itemSubjectRef="__T1_cantidadAsientosOutputXItem" name="cantidadAsientos"/>
+        <bpmn2:dataOutput id="T1_documentoPasajeroOutputX" drools:dtype="String" itemSubjectRef="__T1_documentoPasajeroOutputXItem" name="documentoPasajero"/>
+        <bpmn2:dataOutput id="T1_nombrePasajeroOutputX" drools:dtype="String" itemSubjectRef="__T1_nombrePasajeroOutputXItem" name="nombrePasajero"/>
+        <bpmn2:dataOutput id="T1_numeroPasaporteOutputX" drools:dtype="String" itemSubjectRef="__T1_numeroPasaporteOutputXItem" name="numeroPasaporte"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>T1_TaskNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T1_SkippableInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet>
+          <bpmn2:dataOutputRefs>T1_codigoViajeOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>T1_cantidadAsientosOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>T1_documentoPasajeroOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>T1_nombrePasajeroOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>T1_numeroPasaporteOutputX</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation><bpmn2:targetRef>T1_TaskNameInputX</bpmn2:targetRef><bpmn2:assignment><bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[SolicitarReserva]]></bpmn2:from><bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[T1_TaskNameInputX]]></bpmn2:to></bpmn2:assignment></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:targetRef>T1_SkippableInputX</bpmn2:targetRef><bpmn2:assignment><bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[false]]></bpmn2:from><bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[T1_SkippableInputX]]></bpmn2:to></bpmn2:assignment></bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation><bpmn2:sourceRef>T1_codigoViajeOutputX</bpmn2:sourceRef><bpmn2:targetRef>codigoViaje</bpmn2:targetRef></bpmn2:dataOutputAssociation>
+      <bpmn2:dataOutputAssociation><bpmn2:sourceRef>T1_cantidadAsientosOutputX</bpmn2:sourceRef><bpmn2:targetRef>cantidadAsientos</bpmn2:targetRef></bpmn2:dataOutputAssociation>
+      <bpmn2:dataOutputAssociation><bpmn2:sourceRef>T1_documentoPasajeroOutputX</bpmn2:sourceRef><bpmn2:targetRef>documentoPasajero</bpmn2:targetRef></bpmn2:dataOutputAssociation>
+      <bpmn2:dataOutputAssociation><bpmn2:sourceRef>T1_nombrePasajeroOutputX</bpmn2:sourceRef><bpmn2:targetRef>nombrePasajero</bpmn2:targetRef></bpmn2:dataOutputAssociation>
+      <bpmn2:dataOutputAssociation><bpmn2:sourceRef>T1_numeroPasaporteOutputX</bpmn2:sourceRef><bpmn2:targetRef>numeroPasaporte</bpmn2:targetRef></bpmn2:dataOutputAssociation>
+      <bpmn2:potentialOwner id="_T1_owner"><bpmn2:resourceAssignmentExpression><bpmn2:formalExpression>wbadmin</bpmn2:formalExpression></bpmn2:resourceAssignmentExpression></bpmn2:potentialOwner>
+    </bpmn2:userTask>
+    <bpmn2:scriptTask id="T2" name="Consultar viaje y cupos [REST]" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Consultar viaje y cupos [REST]]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f2</bpmn2:incoming><bpmn2:outgoing>f3</bpmn2:outgoing><bpmn2:script><![CDATA[// Consulta el viaje en NavieraReservasAPI (REST :8082)
+String url = "http://localhost:8082/api/viajes/" + kcontext.getVariable("codigoViaje");
+try {
+  java.net.HttpURLConnection con = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+  con.setRequestMethod("GET");
+
+  int code = con.getResponseCode();
+  java.io.InputStream in = code < 400 ? con.getInputStream() : con.getErrorStream();
+  String body = "";
+  if (in != null) {
+    java.util.Scanner sc = new java.util.Scanner(in, "UTF-8").useDelimiter("\\A");
+    body = sc.hasNext() ? sc.next() : "";
+    sc.close();
+  }
+  System.out.println("[MaritimaSOA] GET " + url + " -> " + code);
+  if (code == 200) {
+    java.util.regex.Matcher mT = java.util.regex.Pattern.compile("\"tipoRuta\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+    java.util.regex.Matcher mP = java.util.regex.Pattern.compile("\"codigoPuerto\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+    java.util.regex.Matcher mF = java.util.regex.Pattern.compile("\"fechaZarpe\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+    java.util.regex.Matcher mD = java.util.regex.Pattern.compile("\"paisDestino\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+    java.util.regex.Matcher mC = java.util.regex.Pattern.compile("\"cuposDisponibles\"\\s*:\\s*(-?[0-9.]+)").matcher(body);
+    if (mT.find()) kcontext.setVariable("tipoRuta", mT.group(1));
+    if (mP.find()) kcontext.setVariable("codigoPuerto", mP.group(1));
+    if (mF.find()) kcontext.setVariable("fechaZarpe", mF.group(1));
+    if (mD.find()) kcontext.setVariable("paisDestino", mD.group(1));
+    Integer cupos = mC.find() ? Integer.valueOf(mC.group(1)) : Integer.valueOf(0);
+    kcontext.setVariable("cuposDisponibles", cupos);
+    Integer pedidos = (Integer) kcontext.getVariable("cantidadAsientos");
+    if (pedidos == null || cupos.intValue() < pedidos.intValue()) {
+      kcontext.setVariable("motivoRechazo", "SIN_CUPOS: el viaje tiene " + cupos + " cupos");
+    }
+  } else {
+    kcontext.setVariable("cuposDisponibles", Integer.valueOf(0));
+    kcontext.setVariable("motivoRechazo", "Viaje no disponible: " + body);
+  }
+} catch (java.io.IOException e) {
+  throw new RuntimeException("El servicio REST no responde (" + url + ")", e);
+}
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:exclusiveGateway id="G1" name="¿Hay cupos?" gatewayDirection="Diverging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[¿Hay cupos?]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f3</bpmn2:incoming><bpmn2:outgoing>f4</bpmn2:outgoing><bpmn2:outgoing>f6</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:scriptTask id="T3" name="Consultar estado del puerto [SOAP]" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Consultar estado del puerto [SOAP]]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f4</bpmn2:incoming><bpmn2:outgoing>f5</bpmn2:outgoing><bpmn2:script><![CDATA[// Consulta el estado del puerto en AutoridadPortuariaService (SOAP :8083)
+String url = "http://localhost:8083/ws";
+try {
+  String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:aut=\"http://maritimasoa.grupo4.pe/autoridadportuaria\"><soapenv:Body>" + "<aut:consultarEstadoPuertoRequest><aut:codigoPuerto>" + kcontext.getVariable("codigoPuerto") + "</aut:codigoPuerto><aut:fechaZarpe>" + kcontext.getVariable("fechaZarpe") + "</aut:fechaZarpe></aut:consultarEstadoPuertoRequest>" + "</soapenv:Body></soapenv:Envelope>";
+  java.net.HttpURLConnection con = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+  con.setRequestMethod("POST");
+  con.setDoOutput(true);
+  con.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+  java.io.OutputStream out = con.getOutputStream();
+  out.write(xml.getBytes("UTF-8"));
+  out.close();
+
+  int code = con.getResponseCode();
+  java.io.InputStream in = code < 400 ? con.getInputStream() : con.getErrorStream();
+  String body = "";
+  if (in != null) {
+    java.util.Scanner sc = new java.util.Scanner(in, "UTF-8").useDelimiter("\\A");
+    body = sc.hasNext() ? sc.next() : "";
+    sc.close();
+  }
+  System.out.println("[MaritimaSOA] SOAP consultarEstadoPuerto -> " + code);
+  java.util.regex.Matcher mA = java.util.regex.Pattern.compile("<(?:\\w+:)?puertoAbierto>([^<]*)<").matcher(body);
+  java.util.regex.Matcher mC = java.util.regex.Pattern.compile("<(?:\\w+:)?condicionMaritima>([^<]*)<").matcher(body);
+  java.util.regex.Matcher mZ = java.util.regex.Pattern.compile("<(?:\\w+:)?codigoAutorizacionZarpe>([^<]*)<").matcher(body);
+  boolean abierto = mA.find() && "true".equals(mA.group(1).trim());
+  kcontext.setVariable("puertoAbierto", Boolean.valueOf(abierto));
+  if (mZ.find()) kcontext.setVariable("codigoAutorizacionZarpe", mZ.group(1));
+  if (!abierto) {
+    kcontext.setVariable("motivoRechazo", "PUERTO_CERRADO: " + (mC.find() ? mC.group(1) : "sin respuesta"));
+  }
+} catch (java.io.IOException e) {
+  throw new RuntimeException("El servicio SOAP no responde (" + url + ")", e);
+}
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:exclusiveGateway id="G2" name="¿Puerto abierto?" gatewayDirection="Diverging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[¿Puerto abierto?]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f5</bpmn2:incoming><bpmn2:outgoing>f7</bpmn2:outgoing><bpmn2:outgoing>f10</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:exclusiveGateway id="Gr" name="" gatewayDirection="Converging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f6</bpmn2:incoming><bpmn2:incoming>f7</bpmn2:incoming><bpmn2:outgoing>f8</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:scriptTask id="T9" name="Notificar rechazo al pasajero" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Notificar rechazo al pasajero]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f8</bpmn2:incoming><bpmn2:outgoing>f9</bpmn2:outgoing><bpmn2:script><![CDATA[// Rechazo por falta de cupos o puerto cerrado
+kcontext.setVariable("estado", "RECHAZADA");
+System.out.println("[MaritimaSOA] Venta RECHAZADA: " + kcontext.getVariable("motivoRechazo"));
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:endEvent id="End2" name="Venta rechazada (sin cupos o puerto cerrado)"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Venta rechazada (sin cupos o puerto cerrado)]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f9</bpmn2:incoming></bpmn2:endEvent>
+    <bpmn2:exclusiveGateway id="G3" name="¿Tipo de ruta?" gatewayDirection="Diverging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[¿Tipo de ruta?]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f10</bpmn2:incoming><bpmn2:outgoing>f11</bpmn2:outgoing><bpmn2:outgoing>f12</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:scriptTask id="T4" name="Validar migración del pasajero [SOAP]" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Validar migración del pasajero [SOAP]]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f12</bpmn2:incoming><bpmn2:outgoing>f13</bpmn2:outgoing><bpmn2:script><![CDATA[// Valida el pasaporte en Migraciones (SOAP :8083), solo rutas internacionales
+String url = "http://localhost:8083/ws";
+try {
+  String xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:aut=\"http://maritimasoa.grupo4.pe/autoridadportuaria\"><soapenv:Body>" + "<aut:validarMigracionPasajeroRequest><aut:numeroPasaporte>" + kcontext.getVariable("numeroPasaporte") + "</aut:numeroPasaporte><aut:documentoIdentidad>" + kcontext.getVariable("documentoPasajero") + "</aut:documentoIdentidad><aut:paisDestino>" + kcontext.getVariable("paisDestino") + "</aut:paisDestino></aut:validarMigracionPasajeroRequest>" + "</soapenv:Body></soapenv:Envelope>";
+  java.net.HttpURLConnection con = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+  con.setRequestMethod("POST");
+  con.setDoOutput(true);
+  con.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+  java.io.OutputStream out = con.getOutputStream();
+  out.write(xml.getBytes("UTF-8"));
+  out.close();
+
+  int code = con.getResponseCode();
+  java.io.InputStream in = code < 400 ? con.getInputStream() : con.getErrorStream();
+  String body = "";
+  if (in != null) {
+    java.util.Scanner sc = new java.util.Scanner(in, "UTF-8").useDelimiter("\\A");
+    body = sc.hasNext() ? sc.next() : "";
+    sc.close();
+  }
+  System.out.println("[MaritimaSOA] SOAP validarMigracionPasajero -> " + code);
+  java.util.regex.Matcher mH = java.util.regex.Pattern.compile("<(?:\\w+:)?habilitadoViaje>([^<]*)<").matcher(body);
+  java.util.regex.Matcher mM = java.util.regex.Pattern.compile("<(?:\\w+:)?mensajeControl>([^<]*)<").matcher(body);
+  boolean habilitado = mH.find() && "true".equals(mH.group(1).trim());
+  kcontext.setVariable("habilitadoViaje", Boolean.valueOf(habilitado));
+  if (!habilitado) {
+    kcontext.setVariable("motivoRechazo", "MIGRACION_RECHAZADA: " + (mM.find() ? mM.group(1) : "sin respuesta"));
+  }
+} catch (java.io.IOException e) {
+  throw new RuntimeException("El servicio SOAP no responde (" + url + ")", e);
+}
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:exclusiveGateway id="G4" name="¿Habilitado para viajar?" gatewayDirection="Diverging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[¿Habilitado para viajar?]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f13</bpmn2:incoming><bpmn2:outgoing>f14</bpmn2:outgoing><bpmn2:outgoing>f15</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:exclusiveGateway id="Gm" name="" gatewayDirection="Converging"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f11</bpmn2:incoming><bpmn2:incoming>f14</bpmn2:incoming><bpmn2:outgoing>f17</bpmn2:outgoing></bpmn2:exclusiveGateway>
+    <bpmn2:scriptTask id="T10" name="Notificar rechazo migratorio" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Notificar rechazo migratorio]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f15</bpmn2:incoming><bpmn2:outgoing>f16</bpmn2:outgoing><bpmn2:script><![CDATA[// Rechazo por control migratorio
+kcontext.setVariable("estado", "RECHAZADA");
+System.out.println("[MaritimaSOA] Venta RECHAZADA: " + kcontext.getVariable("motivoRechazo"));
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:endEvent id="End3" name="Venta rechazada (control migratorio)"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Venta rechazada (control migratorio)]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f16</bpmn2:incoming></bpmn2:endEvent>
+    <bpmn2:scriptTask id="T5" name="Emitir boleto y descontar cupos [REST]" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Emitir boleto y descontar cupos [REST]]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f17</bpmn2:incoming><bpmn2:outgoing>f18</bpmn2:outgoing><bpmn2:script><![CDATA[// Emite el boleto en NavieraReservasAPI (REST :8082) y descuenta los cupos
+String url = "http://localhost:8082/api/boletos";
+try {
+  String nombre = String.valueOf(kcontext.getVariable("nombrePasajero")).replace("\"", "'");
+  String json = "{\"codigoViaje\":\"" + kcontext.getVariable("codigoViaje") + "\","
+      + "\"documentoPasajero\":\"" + kcontext.getVariable("documentoPasajero") + "\","
+      + "\"nombrePasajero\":\"" + nombre + "\","
+      + "\"tipoRuta\":\"" + kcontext.getVariable("tipoRuta") + "\","
+      + "\"cantidadAsientos\":" + kcontext.getVariable("cantidadAsientos") + ","
+      + "\"codigoAutorizacionZarpe\":\"" + kcontext.getVariable("codigoAutorizacionZarpe") + "\"}";
+  java.net.HttpURLConnection con = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+  con.setRequestMethod("POST");
+  con.setDoOutput(true);
+  con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+  java.io.OutputStream out = con.getOutputStream();
+  out.write(json.getBytes("UTF-8"));
+  out.close();
+
+  int code = con.getResponseCode();
+  java.io.InputStream in = code < 400 ? con.getInputStream() : con.getErrorStream();
+  String body = "";
+  if (in != null) {
+    java.util.Scanner sc = new java.util.Scanner(in, "UTF-8").useDelimiter("\\A");
+    body = sc.hasNext() ? sc.next() : "";
+    sc.close();
+  }
+  System.out.println("[MaritimaSOA] POST " + url + " -> " + code + " " + body);
+  if (code != 201) {
+    throw new RuntimeException("No se pudo emitir el boleto: " + body);
+  }
+  java.util.regex.Matcher mI = java.util.regex.Pattern.compile("\"idBoleto\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+  java.util.regex.Matcher mT = java.util.regex.Pattern.compile("\"montoTotal\"\\s*:\\s*(-?[0-9.]+)").matcher(body);
+  java.util.regex.Matcher mU = java.util.regex.Pattern.compile("\"muelleEmbarque\"\\s*:\\s*\"([^\"]*)\"").matcher(body);
+  if (mI.find()) kcontext.setVariable("idBoleto", mI.group(1));
+  if (mT.find()) kcontext.setVariable("montoTotal", mT.group(1));
+  if (mU.find()) kcontext.setVariable("muelleEmbarque", mU.group(1));
+  kcontext.setVariable("estado", "EMITIDO");
+} catch (java.io.IOException e) {
+  throw new RuntimeException("El servicio REST no responde (" + url + ")", e);
+}
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:scriptTask id="T6" name="Publicar aviso de embarque [ActiveMQ]" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Publicar aviso de embarque [ActiveMQ]]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f18</bpmn2:incoming><bpmn2:outgoing>f19</bpmn2:outgoing><bpmn2:script><![CDATA[// Publica el aviso de embarque en ActiveMQ (cola.embarque.boletos) por STOMP, puerto 61613
+String mensaje = "{\"idBoleto\":\"" + kcontext.getVariable("idBoleto") + "\",\"codigoViaje\":\""
+    + kcontext.getVariable("codigoViaje") + "\",\"muelleEmbarque\":\"" + kcontext.getVariable("muelleEmbarque") + "\"}";
+java.net.Socket socket = new java.net.Socket();
+try {
+  socket.connect(new java.net.InetSocketAddress("localhost", 61613), 3000);
+  socket.setSoTimeout(5000);
+  java.io.OutputStream out = socket.getOutputStream();
+  java.io.InputStream in = socket.getInputStream();
+  String[] tramas = {
+    "CONNECT\naccept-version:1.2\nhost:localhost\nlogin:admin\npasscode:admin\n\n",
+    "SEND\ndestination:/queue/cola.embarque.boletos\ncontent-type:application/json\nreceipt:aviso\n\n" + mensaje
+  };
+  String[] esperado = { "CONNECTED", "RECEIPT" };
+  for (int i = 0; i < tramas.length; i++) {
+    out.write(tramas[i].getBytes("UTF-8"));
+    out.write(0);
+    out.flush();
+    StringBuilder resp = new StringBuilder();
+    int b;
+    while ((b = in.read()) > 0) resp.append((char) b);
+    String r = resp.toString().trim();
+    if (!r.startsWith(esperado[i])) throw new java.io.IOException("ActiveMQ respondió: " + r);
+  }
+  out.write("DISCONNECT\n\n".getBytes("UTF-8"));
+  out.write(0);
+  out.flush();
+  System.out.println("[MaritimaSOA] ActiveMQ cola.embarque.boletos <- " + mensaje);
+  kcontext.setVariable("avisoEmbarque", "PUBLICADO");
+} catch (java.io.IOException e) {
+  System.out.println("[MaritimaSOA] ActiveMQ no disponible: " + e.getMessage());
+  kcontext.setVariable("avisoEmbarque", "NO_PUBLICADO (" + e.getMessage() + ")");
+} finally {
+  try { socket.close(); } catch (java.io.IOException ignorada) { }
+}
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:scriptTask id="T7" name="Generar pase de embarque" scriptFormat="http://www.java.com/java"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Generar pase de embarque]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f19</bpmn2:incoming><bpmn2:outgoing>f20</bpmn2:outgoing><bpmn2:script><![CDATA[// Despacho genera el pase de embarque a partir del boleto
+kcontext.setVariable("paseEmbarque", "PASE-" + kcontext.getVariable("idBoleto"));
+System.out.println("[MaritimaSOA] Pase de embarque " + kcontext.getVariable("paseEmbarque"));
+]]></bpmn2:script></bpmn2:scriptTask>
+    <bpmn2:userTask id="T8" name="Recibir boleto y pase de embarque"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Recibir boleto y pase de embarque]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f20</bpmn2:incoming><bpmn2:outgoing>f21</bpmn2:outgoing>
+      <bpmn2:ioSpecification>
+        <bpmn2:dataInput id="T8_TaskNameInputX" drools:dtype="Object" itemSubjectRef="__T8_TaskNameInputXItem" name="TaskName"/>
+        <bpmn2:dataInput id="T8_SkippableInputX" drools:dtype="Object" itemSubjectRef="__T8_SkippableInputXItem" name="Skippable"/>
+        <bpmn2:dataInput id="T8_estadoInputX" drools:dtype="String" itemSubjectRef="__T8_estadoInputXItem" name="estado"/>
+        <bpmn2:dataInput id="T8_idBoletoInputX" drools:dtype="String" itemSubjectRef="__T8_idBoletoInputXItem" name="idBoleto"/>
+        <bpmn2:dataInput id="T8_montoTotalInputX" drools:dtype="String" itemSubjectRef="__T8_montoTotalInputXItem" name="montoTotal"/>
+        <bpmn2:dataInput id="T8_muelleEmbarqueInputX" drools:dtype="String" itemSubjectRef="__T8_muelleEmbarqueInputXItem" name="muelleEmbarque"/>
+        <bpmn2:dataInput id="T8_paseEmbarqueInputX" drools:dtype="String" itemSubjectRef="__T8_paseEmbarqueInputXItem" name="paseEmbarque"/>
+        <bpmn2:dataInput id="T8_avisoEmbarqueInputX" drools:dtype="String" itemSubjectRef="__T8_avisoEmbarqueInputXItem" name="avisoEmbarque"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>T8_TaskNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_SkippableInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_estadoInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_idBoletoInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_montoTotalInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_muelleEmbarqueInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_paseEmbarqueInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>T8_avisoEmbarqueInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>estado</bpmn2:sourceRef><bpmn2:targetRef>T8_estadoInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>idBoleto</bpmn2:sourceRef><bpmn2:targetRef>T8_idBoletoInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>montoTotal</bpmn2:sourceRef><bpmn2:targetRef>T8_montoTotalInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>muelleEmbarque</bpmn2:sourceRef><bpmn2:targetRef>T8_muelleEmbarqueInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>paseEmbarque</bpmn2:sourceRef><bpmn2:targetRef>T8_paseEmbarqueInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:sourceRef>avisoEmbarque</bpmn2:sourceRef><bpmn2:targetRef>T8_avisoEmbarqueInputX</bpmn2:targetRef></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:targetRef>T8_TaskNameInputX</bpmn2:targetRef><bpmn2:assignment><bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[RecibirBoleto]]></bpmn2:from><bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[T8_TaskNameInputX]]></bpmn2:to></bpmn2:assignment></bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation><bpmn2:targetRef>T8_SkippableInputX</bpmn2:targetRef><bpmn2:assignment><bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[false]]></bpmn2:from><bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[T8_SkippableInputX]]></bpmn2:to></bpmn2:assignment></bpmn2:dataInputAssociation>
+      <bpmn2:potentialOwner id="_T8_owner"><bpmn2:resourceAssignmentExpression><bpmn2:formalExpression>wbadmin</bpmn2:formalExpression></bpmn2:resourceAssignmentExpression></bpmn2:potentialOwner>
+    </bpmn2:userTask>
+    <bpmn2:endEvent id="End1" name="Venta exitosa"><bpmn2:extensionElements><drools:metaData name="elementname"><drools:metaValue><![CDATA[Venta exitosa]]></drools:metaValue></drools:metaData></bpmn2:extensionElements><bpmn2:incoming>f21</bpmn2:incoming></bpmn2:endEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram><bpmndi:BPMNPlane bpmnElement="maritima-soa.venta-pasajes-maritimos">
+    <bpmndi:BPMNShape id="shape_Lane_Pasajero" bpmnElement="Lane_Pasajero" isHorizontal="true"><dc:Bounds x="50" y="64" width="1370" height="130"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Lane_Naviera" bpmnElement="Lane_Naviera" isHorizontal="true"><dc:Bounds x="50" y="194" width="1370" height="240"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Lane_Autoridad" bpmnElement="Lane_Autoridad" isHorizontal="true"><dc:Bounds x="50" y="434" width="1370" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Lane_Despacho" bpmnElement="Lane_Despacho" isHorizontal="true"><dc:Bounds x="50" y="574" width="1370" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Start" bpmnElement="Start"><dc:Bounds x="112" y="111" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T1" bpmnElement="T1"><dc:Bounds x="185" y="95" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T2" bpmnElement="T2"><dc:Bounds x="185" y="330" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_G1" bpmnElement="G1"><dc:Bounds x="340" y="339" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T3" bpmnElement="T3"><dc:Bounds x="305" y="470" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_G2" bpmnElement="G2"><dc:Bounds x="480" y="339" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Gr" bpmnElement="Gr"><dc:Bounds x="480" y="214" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T9" bpmnElement="T9"><dc:Bounds x="585" y="205" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_End2" bpmnElement="End2"><dc:Bounds x="767" y="221" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_G3" bpmnElement="G3"><dc:Bounds x="620" y="339" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T4" bpmnElement="T4"><dc:Bounds x="585" y="470" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_G4" bpmnElement="G4"><dc:Bounds x="760" y="479" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_Gm" bpmnElement="Gm"><dc:Bounds x="760" y="339" width="50" height="50"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T10" bpmnElement="T10"><dc:Bounds x="855" y="470" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_End3" bpmnElement="End3"><dc:Bounds x="1002" y="486" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T5" bpmnElement="T5"><dc:Bounds x="855" y="330" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T6" bpmnElement="T6"><dc:Bounds x="1050" y="330" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T7" bpmnElement="T7"><dc:Bounds x="1050" y="610" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_T8" bpmnElement="T8"><dc:Bounds x="1200" y="95" width="120" height="68"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="shape_End1" bpmnElement="End1"><dc:Bounds x="1347" y="111" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="edge_f1" bpmnElement="f1"><di:waypoint x="148" y="129"/><di:waypoint x="185" y="129"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f2" bpmnElement="f2"><di:waypoint x="245" y="163"/><di:waypoint x="245" y="330"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f3" bpmnElement="f3"><di:waypoint x="305" y="364"/><di:waypoint x="340" y="364"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f4" bpmnElement="f4"><di:waypoint x="365" y="389"/><di:waypoint x="365" y="470"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f5" bpmnElement="f5"><di:waypoint x="425" y="504"/><di:waypoint x="505" y="504"/><di:waypoint x="505" y="389"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f6" bpmnElement="f6"><di:waypoint x="365" y="339"/><di:waypoint x="365" y="239"/><di:waypoint x="480" y="239"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f7" bpmnElement="f7"><di:waypoint x="505" y="339"/><di:waypoint x="505" y="264"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f8" bpmnElement="f8"><di:waypoint x="530" y="239"/><di:waypoint x="585" y="239"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f9" bpmnElement="f9"><di:waypoint x="705" y="239"/><di:waypoint x="767" y="239"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f10" bpmnElement="f10"><di:waypoint x="530" y="364"/><di:waypoint x="620" y="364"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f11" bpmnElement="f11"><di:waypoint x="670" y="364"/><di:waypoint x="760" y="364"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f12" bpmnElement="f12"><di:waypoint x="645" y="389"/><di:waypoint x="645" y="470"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f13" bpmnElement="f13"><di:waypoint x="705" y="504"/><di:waypoint x="760" y="504"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f14" bpmnElement="f14"><di:waypoint x="785" y="479"/><di:waypoint x="785" y="389"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f15" bpmnElement="f15"><di:waypoint x="810" y="504"/><di:waypoint x="855" y="504"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f16" bpmnElement="f16"><di:waypoint x="975" y="504"/><di:waypoint x="1002" y="504"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f17" bpmnElement="f17"><di:waypoint x="810" y="364"/><di:waypoint x="855" y="364"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f18" bpmnElement="f18"><di:waypoint x="975" y="364"/><di:waypoint x="1050" y="364"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f19" bpmnElement="f19"><di:waypoint x="1110" y="398"/><di:waypoint x="1110" y="610"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f20" bpmnElement="f20"><di:waypoint x="1170" y="644"/><di:waypoint x="1260" y="644"/><di:waypoint x="1260" y="163"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="edge_f21" bpmnElement="f21"><di:waypoint x="1320" y="129"/><di:waypoint x="1347" y="129"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn2:definitions>

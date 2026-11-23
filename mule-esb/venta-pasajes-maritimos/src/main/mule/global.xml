@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+
+	<!-- Guía 10: direcciones y nombre de la cola en un archivo .properties -->
+	<configuration-properties doc:name="maritima.properties" file="maritima.properties" />
+
+	<!-- Entrada del bus: el cliente solo conoce este puerto -->
+	<http:listener-config name="Ventas_HTTP_Listener" doc:name="Ventas HTTP Listener">
+		<http:listener-connection host="0.0.0.0" port="${http.puerto}" />
+	</http:listener-config>
+
+	<!-- Servicio REST NavieraReservasAPI -->
+	<http:request-config name="Naviera_REST_Config" doc:name="Naviera REST" basePath="${rest.basePath}">
+		<http:request-connection host="${rest.host}" port="${rest.puerto}" />
+	</http:request-config>
+
+	<!-- Servicio SOAP AutoridadPortuariaService (contrato WSDL) -->
+	<wsc:config name="Autoridad_SOAP_Config" doc:name="Autoridad Portuaria SOAP">
+		<wsc:connection wsdlLocation="wsdl/autoridadPortuaria.wsdl" service="AutoridadPortuariaService" port="AutoridadPortuariaPortSoap11" address="${soap.address}" />
+	</wsc:config>
+
+	<!-- Apache ActiveMQ, productor: si el broker no responde se reintenta una vez (2 s) y la venta sigue con el aviso PENDIENTE -->
+	<jms:config name="ActiveMQ_Publicar_Config" doc:name="ActiveMQ (publicar)">
+		<jms:active-mq-connection username="${usuario.queue}" password="${clave.queue}">
+			<reconnection failsDeployment="false">
+				<reconnect frequency="2000" count="1" />
+			</reconnection>
+			<jms:factory-configuration brokerUrl="tcp://${ip.queue}:${puerto.queue}" />
+		</jms:active-mq-connection>
+	</jms:config>
+
+	<!-- Apache ActiveMQ, consumidor (Despacho): reintenta 3 veces cada 3 s. ActiveMQ debe estar encendido antes de iniciar Mule -->
+	<jms:config name="ActiveMQ_Despacho_Config" doc:name="ActiveMQ (Despacho)">
+		<jms:active-mq-connection username="${usuario.queue}" password="${clave.queue}">
+			<reconnection failsDeployment="false">
+				<reconnect frequency="3000" count="3" />
+			</reconnection>
+			<jms:factory-configuration brokerUrl="tcp://${ip.queue}:${puerto.queue}" />
+		</jms:active-mq-connection>
+	</jms:config>
+
+</mule>

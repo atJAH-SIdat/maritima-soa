@@ -14,3 +14,9 @@ target/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Copias generadas por el IDE (Eclipse/STS)
+bin/
+
+# Anypoint Studio
+.mule/
