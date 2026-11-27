@@ -20,3 +20,7 @@ bin/
 
 # Anypoint Studio
 .mule/
+
+# Python (cache del generador del proceso jBPM)
+__pycache__/
+*.pyc

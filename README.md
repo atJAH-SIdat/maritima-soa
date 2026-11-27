@@ -7,9 +7,9 @@ Proyecto integrador del curso **Aplicaciones con Enfoque Orientado a Servicios**
 
 | Integrante | Rol | Carpeta a su cargo |
 | --- | --- | --- |
-| Albornoz Hinostroza, Jatniel | Arquitecto de procesos (BPMN y jBPM) | `docs/bpmn/`, `jbpm/` |
-| Marcelo Rodriguez, Fabian | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
-| Vargas Zapata, Renzo | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
+| Marcelo Rodriguez, Fabian | Arquitecto de procesos (BPMN y jBPM) | `docs/bpmn/`, `jbpm/` |
+| Vargas Zapata, Renzo | Desarrollador de servicios (SOAP y REST) | `servicio-soap/`, `servicio-rest/` |
+| Albornoz Hinostroza, Jatniel | Especialista de integración y pruebas (Mule ESB, ActiveMQ y MUnit) | `mule-esb/` |
 
 ## El caso
 
@@ -233,7 +233,12 @@ Los dos servicios guardan sus datos en memoria. Al reiniciarlos, los cupos y bol
 2. Clic derecho sobre el proyecto > Run As > **Mule Application**.
 3. Está listo cuando la consola muestra `venta-pasajes-maritimos ... DEPLOYED`.
 
-En el lienzo se ven dos flujos: `venta-pasajes-flow` (la venta de punta a punta) y `despacho-embarque-flow` (consume la cola y genera el pase de embarque). Cada paso deja en la consola una línea `[MaritimaSOA] ...`.
+En el lienzo se ven dos flujos:
+
+- `venta-pasajes-flow` lleva la venta de punta a punta. Para que se lea de un vistazo, cada etapa es un subflujo que se llama con Flow Reference: `validar-solicitud`, `consultar-viaje`, `consultar-puerto`, `migraciones`, `emitir-boleto`, `publicar-aviso` y `responder-venta`. Los subflujos no tienen manejador propio: los errores vuelven al flujo principal, que responde 400, 422 o 503.
+- `despacho-embarque-flow` consume la cola y genera el pase de embarque.
+
+Cada paso deja en la consola una línea `[MaritimaSOA] ...`.
 
 ### 5. jBPM (Business Central en 8080)
 

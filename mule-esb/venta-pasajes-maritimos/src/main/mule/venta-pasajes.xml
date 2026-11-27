@@ -12,9 +12,13 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 
 	<!--
 		venta-pasajes-flow: recibe una venta y la lleva de punta a punta.
-		1. Consulta el viaje y los cupos (REST)     4. Valida migraciones, solo si la ruta es internacional (SOAP)
-		2. Verifica que haya cupos                  5. Emite el boleto y descuenta los cupos (REST)
-		3. Consulta el estado del puerto (SOAP)     6. Publica el aviso de embarque (ActiveMQ)
+		Cada etapa es un subflujo llamado con Flow Reference:
+		1. Validar solicitud            5. Emitir boleto y descontar cupos (REST)
+		2. Consultar viaje y cupos (REST)  6. Publicar aviso de embarque (ActiveMQ)
+		3. Consultar puerto (SOAP)      7. Responder con el boleto (201)
+		4. Migraciones, solo rutas internacionales (SOAP)
+		Los subflujos no tienen manejador propio: si una regla no se cumple, el error vuelve
+		a este flujo y lo atiende el error-handler de abajo.
 	-->
 	<flow name="venta-pasajes-flow" doc:name="venta-pasajes-flow">
 		<http:listener doc:name="POST /api/ventas" config-ref="Ventas_HTTP_Listener" path="/api/ventas" allowedMethods="POST">
@@ -24,16 +28,43 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 			</http:error-response>
 		</http:listener>
 
+		<flow-ref doc:name="1. Validar solicitud" name="validar-solicitud" />
+		<flow-ref doc:name="2. Consultar viaje" name="consultar-viaje" />
+		<flow-ref doc:name="3. Consultar puerto" name="consultar-puerto" />
+		<flow-ref doc:name="4. Migraciones" name="migraciones" />
+		<flow-ref doc:name="5. Emitir boleto" name="emitir-boleto" />
+		<flow-ref doc:name="6. Publicar aviso" name="publicar-aviso" />
+		<flow-ref doc:name="7. Responder" name="responder-venta" />
+
+		<error-handler>
+			<!-- Excepción de negocio: se maneja y se responde 422 (400 si la solicitud está incompleta) -->
+			<on-error-continue doc:name="Rechazo de negocio" type="APP:SOLICITUD_INVALIDA, APP:VIAJE_NO_ENCONTRADO, APP:SIN_CUPOS, APP:PUERTO_CERRADO, APP:MIGRACION_RECHAZADA, APP:EMISION_RECHAZADA" logException="false">
+				<set-variable doc:name="HTTP 422 o 400" variableName="httpStatus" value="#[if (error.errorType.identifier == 'SOLICITUD_INVALIDA') 400 else 422]" />
+				<logger doc:name="Log rechazo" level="WARN" message="#['[MaritimaSOA] Venta RECHAZADA (' ++ error.errorType.identifier ++ '): ' ++ (error.description default '')]" />
+				<set-payload doc:name="Respuesta: venta rechazada" value="#[output application/json --- { estado: 'RECHAZADA', causa: error.errorType.identifier, mensaje: error.description, codigoViaje: vars.solicitud.codigoViaje }]" />
+			</on-error-continue>
+			<!-- Excepción técnica: se registra y se propaga con 503; no se emite boleto -->
+			<on-error-propagate doc:name="Falla técnica" type="HTTP:CONNECTIVITY, HTTP:TIMEOUT, WSC:CONNECTIVITY, WSC:CANNOT_DISPATCH, WSC:TIMEOUT" logException="false">
+				<set-variable doc:name="HTTP 503" variableName="httpStatus" value="#[503]" />
+				<logger doc:name="Log falla técnica" level="ERROR" message="#['[MaritimaSOA] Servicio no disponible (' ++ error.errorType.namespace ++ ':' ++ error.errorType.identifier ++ '): ' ++ (error.description default '')]" />
+				<set-payload doc:name="Respuesta: servicio no disponible" value="#[output application/json --- { estado: 'ERROR', causa: 'SERVICIO_NO_DISPONIBLE', mensaje: 'Un servicio externo no responde. No se emitió ningún boleto; reintente en unos minutos.', detalle: error.errorType.namespace ++ ':' ++ error.errorType.identifier }]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+
+	<!-- 1. Guarda la solicitud y revisa que esté completa -->
+	<sub-flow name="validar-solicitud" doc:name="validar-solicitud">
 		<set-variable doc:name="Guardar solicitud" variableName="solicitud" value="#[output application/java --- payload]" />
 		<logger doc:name="Log solicitud" level="INFO" message="#['[MaritimaSOA] Nueva venta: viaje ' ++ (vars.solicitud.codigoViaje default '?') ++ ', asientos ' ++ ((vars.solicitud.cantidadAsientos default '?') as String)]" />
-
 		<choice doc:name="¿Solicitud válida?">
 			<when expression="#[isEmpty(vars.solicitud.codigoViaje) or isEmpty(vars.solicitud.documentoPasajero) or isEmpty(vars.solicitud.nombrePasajero) or ((vars.solicitud.cantidadAsientos default 0) as Number) &lt; 1]">
 				<raise-error doc:name="APP:SOLICITUD_INVALIDA" type="APP:SOLICITUD_INVALIDA" description="Son obligatorios codigoViaje, documentoPasajero, nombrePasajero y cantidadAsientos (1 o más)" />
 			</when>
 		</choice>
+	</sub-flow>
 
-		<!-- 1. Viaje y cupos: REST -->
+	<!-- 2. Viaje y cupos: REST -->
+	<sub-flow name="consultar-viaje" doc:name="consultar-viaje">
 		<http:request doc:name="Consultar viaje" method="GET" config-ref="Naviera_REST_Config" path="/viajes/{codigoViaje}">
 			<http:uri-params><![CDATA[#[{ codigoViaje: vars.solicitud.codigoViaje }]]]></http:uri-params>
 			<http:response-validator>
@@ -46,15 +77,15 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 			</when>
 		</choice>
 		<set-variable doc:name="Guardar viaje" variableName="viaje" value="#[output application/java --- payload]" />
-
-		<!-- 2. Cupos -->
 		<choice doc:name="¿Hay cupos?">
 			<when expression="#[vars.viaje.cuposDisponibles &lt; (vars.solicitud.cantidadAsientos as Number)]">
 				<raise-error doc:name="APP:SIN_CUPOS" type="APP:SIN_CUPOS" description="#['El viaje ' ++ vars.viaje.codigoViaje ++ ' tiene ' ++ (vars.viaje.cuposDisponibles as String) ++ ' cupos y se pidieron ' ++ (vars.solicitud.cantidadAsientos as String)]" />
 			</when>
 		</choice>
+	</sub-flow>
 
-		<!-- 3. Estado del puerto: SOAP -->
+	<!-- 3. Estado del puerto: SOAP -->
+	<sub-flow name="consultar-puerto" doc:name="consultar-puerto">
 		<wsc:consume doc:name="Consultar estado del puerto" config-ref="Autoridad_SOAP_Config" operation="consultarEstadoPuerto">
 			<wsc:message>
 				<wsc:body><![CDATA[#[%dw 2.0
@@ -75,8 +106,10 @@ ns aut http://maritimasoa.grupo4.pe/autoridadportuaria
 				<raise-error doc:name="APP:PUERTO_CERRADO" type="APP:PUERTO_CERRADO" description="#['El puerto ' ++ vars.viaje.codigoPuerto ++ ' está cerrado: ' ++ vars.puerto.condicion]" />
 			</when>
 		</choice>
+	</sub-flow>
 
-		<!-- 4. Migraciones: SOAP, solo rutas internacionales -->
+	<!-- 4. Migraciones: SOAP, solo rutas internacionales -->
+	<sub-flow name="migraciones" doc:name="migraciones">
 		<choice doc:name="¿Tipo de ruta?">
 			<when expression="#[vars.viaje.tipoRuta == 'INTERNACIONAL']">
 				<wsc:consume doc:name="Validar migración del pasajero" config-ref="Autoridad_SOAP_Config" operation="validarMigracionPasajero">
@@ -105,8 +138,10 @@ ns aut http://maritimasoa.grupo4.pe/autoridadportuaria
 				<logger doc:name="Ruta nacional" level="INFO" message="[MaritimaSOA] Ruta nacional: no requiere control migratorio" />
 			</otherwise>
 		</choice>
+	</sub-flow>
 
-		<!-- 5. Emitir boleto: REST -->
+	<!-- 5. Emitir boleto y descontar cupos: REST -->
+	<sub-flow name="emitir-boleto" doc:name="emitir-boleto">
 		<http:request doc:name="Emitir boleto" method="POST" config-ref="Naviera_REST_Config" path="/boletos">
 			<http:body><![CDATA[#[output application/json
 ---
@@ -128,8 +163,10 @@ ns aut http://maritimasoa.grupo4.pe/autoridadportuaria
 			</when>
 		</choice>
 		<set-variable doc:name="Guardar boleto" variableName="boleto" value="#[output application/java --- payload]" />
+	</sub-flow>
 
-		<!-- 6. Aviso de embarque: ActiveMQ. Si el broker no responde, el boleto ya emitido no se pierde -->
+	<!-- 6. Aviso de embarque: ActiveMQ. Si el broker no responde, el boleto ya emitido no se pierde -->
+	<sub-flow name="publicar-aviso" doc:name="publicar-aviso">
 		<try doc:name="Publicar aviso de embarque">
 			<jms:publish doc:name="Publicar en cola.embarque.boletos" config-ref="ActiveMQ_Publicar_Config" destination="${nombre.queue}">
 				<jms:message>
@@ -144,26 +181,14 @@ ns aut http://maritimasoa.grupo4.pe/autoridadportuaria
 				</on-error-continue>
 			</error-handler>
 		</try>
+	</sub-flow>
 
+	<!-- 7. Respuesta 201 con el boleto emitido -->
+	<sub-flow name="responder-venta" doc:name="responder-venta">
 		<set-variable doc:name="HTTP 201" variableName="httpStatus" value="#[201]" />
 		<set-payload doc:name="Respuesta: boleto emitido" value="#[output application/json --- { estado: 'EMITIDO', idBoleto: vars.boleto.idBoleto, codigoViaje: vars.boleto.codigoViaje, tipoRuta: vars.boleto.tipoRuta, cantidadAsientos: vars.boleto.cantidadAsientos, montoTotal: vars.boleto.montoTotal, muelleEmbarque: vars.boleto.muelleEmbarque, avisoEmbarque: vars.avisoEmbarque }]" />
 		<logger doc:name="Log boleto emitido" level="INFO" message="#['[MaritimaSOA] Boleto ' ++ vars.boleto.idBoleto ++ ' EMITIDO, aviso de embarque ' ++ vars.avisoEmbarque]" />
-
-		<error-handler>
-			<!-- Excepción de negocio: se maneja y se responde 422 (400 si la solicitud está incompleta) -->
-			<on-error-continue doc:name="Rechazo de negocio" type="APP:SOLICITUD_INVALIDA, APP:VIAJE_NO_ENCONTRADO, APP:SIN_CUPOS, APP:PUERTO_CERRADO, APP:MIGRACION_RECHAZADA, APP:EMISION_RECHAZADA" logException="false">
-				<set-variable doc:name="HTTP 422 o 400" variableName="httpStatus" value="#[if (error.errorType.identifier == 'SOLICITUD_INVALIDA') 400 else 422]" />
-				<logger doc:name="Log rechazo" level="WARN" message="#['[MaritimaSOA] Venta RECHAZADA (' ++ error.errorType.identifier ++ '): ' ++ (error.description default '')]" />
-				<set-payload doc:name="Respuesta: venta rechazada" value="#[output application/json --- { estado: 'RECHAZADA', causa: error.errorType.identifier, mensaje: error.description, codigoViaje: vars.solicitud.codigoViaje }]" />
-			</on-error-continue>
-			<!-- Excepción técnica: se registra y se propaga con 503; no se emite boleto -->
-			<on-error-propagate doc:name="Falla técnica" type="HTTP:CONNECTIVITY, HTTP:TIMEOUT, WSC:CONNECTIVITY, WSC:CANNOT_DISPATCH, WSC:TIMEOUT" logException="false">
-				<set-variable doc:name="HTTP 503" variableName="httpStatus" value="#[503]" />
-				<logger doc:name="Log falla técnica" level="ERROR" message="#['[MaritimaSOA] Servicio no disponible (' ++ error.errorType.namespace ++ ':' ++ error.errorType.identifier ++ '): ' ++ (error.description default '')]" />
-				<set-payload doc:name="Respuesta: servicio no disponible" value="#[output application/json --- { estado: 'ERROR', causa: 'SERVICIO_NO_DISPONIBLE', mensaje: 'Un servicio externo no responde. No se emitió ningún boleto; reintente en unos minutos.', detalle: error.errorType.namespace ++ ':' ++ error.errorType.identifier }]" />
-			</on-error-propagate>
-		</error-handler>
-	</flow>
+	</sub-flow>
 
 	<!--
 		despacho-embarque-flow: simula al área de Despacho. Consume cola.embarque.boletos

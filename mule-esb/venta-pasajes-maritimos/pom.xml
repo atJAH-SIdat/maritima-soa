@@ -13,6 +13,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Mule 4.13 necesita Java 17: así Studio no asocia el proyecto a un JDK 8 instalado en la PC -->
+		<maven.compiler.release>17</maven.compiler.release>
 
 		<app.runtime>4.13.0</app.runtime>
 		<mule.maven.plugin.version>4.10.3</mule.maven.plugin.version>
@@ -40,6 +42,7 @@
 							<artifactId>activemq-client</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
+					<classifier>mule-application</classifier>
 				</configuration>
 			</plugin>
 			<plugin>
